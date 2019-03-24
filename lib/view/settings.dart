@@ -4,46 +4,55 @@ import 'package:shared_preferences/shared_preferences.dart';
 class Settings extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    return _SettingsState();
+    return SettingsState();
   }
 }
 
-class _SettingsState extends State<Settings> {
-  var classes = ['4A', '4B', '4C'];
-  var selectedClass = '4A';
-  var selectedClassId=51;
+Future<bool> saveData(String theClass) async {
+  SharedPreferences preferences = await SharedPreferences.getInstance();
+  return (await preferences.setString("Class", theClass));
+}
+
+Future<String> loadData() async {
+  SharedPreferences preferences = await SharedPreferences.getInstance();
+  String tmp = preferences.getString("Class")??"4A";
+  return tmp;
+}
+
+//var selectedClass = '4A';
+
+class SettingsState extends State<Settings> {
+  static var classes = ['4A', '4B', '4C'];
+  static var selectedClass = '4A';
+  static var selectedClassId=51;
   final double  _minimumPadding = 5.0;
 
-  Future<bool> saveData() async {
-    SharedPreferences preferences = await SharedPreferences.getInstance();
-    return (await preferences.setString("Class", selectedClass));
-  }
 
-  Future<String> loadData() async {
-    SharedPreferences preferences = await SharedPreferences.getInstance();
-    String tmp = preferences.getString("Class")??"4A";
-    setState(() {
-      selectedClass = tmp;
-      selectedClassId = 51+classes.indexOf(selectedClass);
-      debugPrint("classid=$selectedClassId");
-    });
-    return tmp;
+  static void setSelectedClass(String tmp){
+    selectedClass = tmp;
+    selectedClassId = 51+classes.indexOf(selectedClass);
   }
 
   @override
   void initState() {
     super.initState();
-    loadData();
+    loadData().then((tmp){
+      setState(() {
+        selectedClass = tmp;
+        selectedClassId = 51+classes.indexOf(selectedClass);
+        debugPrint("classid=$selectedClassId");
+      });
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return /*Scaffold(
 //			resizeToAvoidBottomPadding: false,
         appBar: AppBar(
           title: Text('Settings'),
         ),
-        body: Container(
+        body: */Container(
           alignment: Alignment.topLeft,
           child: ListView(
               children: <Widget>[
@@ -76,7 +85,7 @@ class _SettingsState extends State<Settings> {
                               selectedClass = newValueSelected;
                               selectedClassId = 51+classes.indexOf(selectedClass);
                               debugPrint("classid=$selectedClassId");
-                              saveData();
+                              saveData(selectedClass);
                             });
 
                           },
@@ -88,7 +97,7 @@ class _SettingsState extends State<Settings> {
                     )),
               ]
           ),
-        ),
-    );
+        );//,
+    //);
   }
 }
