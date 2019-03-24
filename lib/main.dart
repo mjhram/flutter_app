@@ -14,6 +14,7 @@ class MyApp extends StatelessWidget {
       SettingsState.setSelectedClass(tmp);
     });
     return new MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: new ThemeData(
         // This is the theme of your application.
